@@ -16,16 +16,22 @@ import java.util.UUID;
 @Builder
 public class RoleDto {
 
+
     private UUID id;
-    private String email;
+
     private String name;
-    private String password;
-    private String image;
-    private boolean enable = true;
-    private Instant createdAt = Instant.now();
-    private Instant updatedAt = Instant.now();
-    private Provider provider = Provider.LOCAL;
-    private Set<RoleDto> roles = new HashSet<>();
+
+
+//    private UUID id;
+//    private String email;
+//    private String name;
+//    private String password;
+//    private String image;
+//    private boolean enable = true;
+//    private Instant createdAt = Instant.now();
+//    private Instant updatedAt = Instant.now();
+//    private Provider provider = Provider.LOCAL;
+//    private Set<RoleDto> roles = new HashSet<>();
 
 
 }
