@@ -31,18 +31,16 @@ public class UserServiceImpl implements UserService {
         if(userDto.getEmail() == null || userDto.getEmail().isBlank()) {
             throw new IllegalArgumentException("Email is required");
         }
-
         if(userRepository.existsByEmail(userDto.getEmail())) {
             throw new IllegalArgumentException("Email already Exists");
         }
 
-        User user = modelMapper.map(userDto, User.class);
+        User user = modelMapper.map(userDto, User.class); //convert dto to entity
         user.setProvider(userDto.getProvider() != null ? userDto.getProvider() : Provider.LOCAL);
 
-        //role assign here to user for authorization
+        //TODO:role assign here to user for authorization
 
         User savedUser = userRepository.save(user);
-
         return modelMapper.map(savedUser, UserDto.class);
 
     }
@@ -50,8 +48,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto getUserByEmail(String email) {
 
-       User user =  userRepository
-               .findByEmail(email)
+       User user =  userRepository.findByEmail(email)
                .orElseThrow(() -> new ResourceNotFoundException("User not found with given id"));
 
         return modelMapper.map(user, UserDto.class);
@@ -61,8 +58,7 @@ public class UserServiceImpl implements UserService {
     public UserDto updateUser(UserDto userDto, String userId) {
 
         UUID uId = UserHelper.parseUUID(userId);
-        User existingUser = userRepository
-                .findById(uId)
+        User existingUser = userRepository.findById(uId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found for update for this given id"));
 
         if(userDto.getName() != null) existingUser.setName(userDto.getName());
@@ -72,9 +68,7 @@ public class UserServiceImpl implements UserService {
         if(userDto.getPassword() != null) existingUser.setPassword(userDto.getPassword());
 
         existingUser.setUpdatedAt(Instant.now());
-
         existingUser.setEnable(userDto.isEnable());
-
         User updatedUser = userRepository.save(existingUser);
 
         return modelMapper.map(updatedUser, UserDto.class);
@@ -83,7 +77,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(String userId) {
 
-      UUID uId =  UserHelper.parseUUID(userId);
+        UUID uId =  UserHelper.parseUUID(userId);
      User user = userRepository.findById(uId).orElseThrow(() -> new ResourceNotFoundException("User not found with given id"));
      userRepository.delete(user);
 
