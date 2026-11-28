@@ -1,10 +1,14 @@
 package com.substring.auth.auth_app_backend.config;
 
+import com.substring.auth.auth_app_backend.dtos.ApiError;
 import com.substring.auth.auth_app_backend.security.JwtAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -44,9 +48,17 @@ public class SecurityConfig {
                     response.setStatus(401);
                     response.setContentType("application/json");
                     String message = "unauthorized access! "+ e.getMessage();
-                    Map<String, String> errorMap=Map.of("message", message,  "statusCode", Integer.toString(401));
+
+                    String error = (String) request.getAttribute("error");
+                    if(error != null) {
+                        message = error;
+                    }
+
+
+//                    Map<String, Object> errorMap=Map.of("message", message,  "statusCode", 401);
+                    var apiError = ApiError.of(HttpStatus.UNAUTHORIZED.value(), "Unauthorized Access !!", message, request.getRequestURI(),true);
                     var objectMapper = new ObjectMapper();
-                    response.getWriter().write(objectMapper.writeValueAsString(errorMap));
+                    response.getWriter().write(objectMapper.writeValueAsString(apiError));
                 }))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
@@ -56,6 +68,13 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration){
+
+        return configuration.getAuthenticationManager();
+
     }
 
 

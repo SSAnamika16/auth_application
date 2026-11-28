@@ -41,8 +41,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             //token extract and validate then authentication create and then set inside security context
             String token = header.substring(7);
 
-
-
             try {
 
                 //check for access token
@@ -80,22 +78,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         if (SecurityContextHolder.getContext().getAuthentication() == null)
                             SecurityContextHolder.getContext().setAuthentication(authentication);
                     }
-
                         });
 
-
-
             } catch (ExpiredJwtException e) {
-                e.printStackTrace();
-
-            } catch (MalformedJwtException e) {
-                e.printStackTrace();
-
-            } catch (JwtException e) {
-                e.printStackTrace();
+                request.setAttribute("error", "Token Expired");
+//                e.printStackTrace();
 
             } catch (Exception e) {
-                e.printStackTrace();
+                request.setAttribute("error", "Invalid Token");
+//                e.printStackTrace();
 
             }
         }
@@ -104,4 +95,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 
     }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        return request.getRequestURI().startsWith("/api/v1/auth");
+    }
+
+
+
 }
