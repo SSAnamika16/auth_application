@@ -2,6 +2,7 @@ package com.substring.auth.auth_app_backend.security;
 
 
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 
 @Service
+@Getter
 public class CookieService {
 
     private final String refreshTokenCookieName;
